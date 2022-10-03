@@ -68,7 +68,7 @@ const doAuth = function (req, res, next) {
       });
     }
   };
-  setTimeout(()=> {app.use(doAuth)}, 1000);
+  setTimeout(()=> {app.use(doAuth)}, 10000);
   
   // AUTH
   app.get("/login-check", (req, res) => {
@@ -128,7 +128,7 @@ app.post("/admin/books", (req, res) => {
     (title, author, category_id, reservation, photo)
     VALUES (?, ?, ?, ?, ?)
     `;
-    con.query(sql, [req.body.title, req.body.author, req.body.category_id, req.body.reservation, req.body.photo], (err, result) => {
+    con.query(sql, [req.body.title, req.body.author, req.body.category, req.body.reservation, req.body.photo], (err, result) => {
         if (err) throw err;
         res.send({ result, msg: { text: 'OK, new and book was created', type: 'success' } });
     });
@@ -195,7 +195,7 @@ app.delete("/admin/books/:id", (req, res) => {
 
 
 
-//--------------ADMIN categories---------------
+//--------------ADMIN CATEGORIES---------------
 
 app.post("/admin/categories", (req, res) => {
     const sql = `
@@ -253,29 +253,56 @@ app.get("/admin/categories", (req, res) => {
     });
   });
 
-  //FRONT READ books
-app.get("/books", (req, res) => {
-    const sql = `
-    SELECT b.id, b.title, b.author, c.name AS category, b.reservation, b.photo, b.rates, b.rate_sum
+
+  //FRONT READ BOOKS
+app.get("/books", (req, res) => {    
+  let sql;
+  let requests;
+  console.log(req.query['category-id']);
+  if (!req.query['category-id'] && !req.query['s']) {
+ sql = `
+    SELECT b.id, c.id AS cid, b.title, b.author, c.name AS category, b.reservation, b.photo
     FROM books AS b
     LEFT JOIN categories AS c
     ON c.id = b.category_id
   `;
-    con.query(sql, (err, result) => {
+  requests = [];
+} else if (req.query['category-id']) {
+  sql = `
+  SELECT b.id, c.id AS cid, b.title, b.author, c.name AS category, b.reservation, b.photo
+  FROM books AS b
+  LEFT JOIN categories AS c
+  ON c.id = b.category_id
+  WHERE b.category_id = ?
+`;
+requests = [req.query['category-id']];
+     } else {
+         sql = `
+         SELECT b.id, c.id AS cid, b.title, b.author, c.name AS category, b.reservation, b.photo
+         FROM books AS b
+         LEFT JOIN categories AS c
+         ON c.id = b.category_id
+         WHERE b.title LIKE ?
+         `;
+         requests = ['%' + req.query['s'] + '%'];
+     }
+         con.query(sql, requests, (err, result) => {
       if (err) throw err;
       res.send(result);
     });
   });
+
+     // b.rates, b.rate_sums
   
-  app.put("/rates/:id", (req, res) => {
-    const sql = `
-    UPDATE books
-    SET rates = rates + 1, rate_sum = rate_sum + ?
-    WHERE id = ?
-  `;
-    con.query(sql, [req.body.rate, req.params.id], (err, result) => {
-      if (err) throw err;
-      res.send({ result, msg: { text: "Thank you for voting!", type: "success" } });
-    });
-  });
+  // app.put("/rates/:id", (req, res) => {
+  //   const sql = `
+  //   UPDATE books
+  //   SET rates = rates + 1, rate_sum = rate_sum + ?
+  //   WHERE id = ?
+  // `;
+  //   con.query(sql, [req.body.rate, req.params.id], (err, result) => {
+  //     if (err) throw err;
+  //     res.send({ result, msg: { text: "Thank you for voting!", type: "success" } });
+  //   });
+  // });
   

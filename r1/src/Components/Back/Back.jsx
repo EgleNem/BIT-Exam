@@ -7,6 +7,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { authConfig } from '../../Functions/auth';
 
+
 function Back({ show }) {
 
     const [lastUpdate, setLastUpdate] = useState(Date.now());
@@ -164,9 +165,10 @@ function Back({ show }) {
                 show === 'admin' ?
                     <>
                         <Nav />
-                        <h1>Welcome to the new and better Library platfrom!
+                        <h1>Welcome to the Library!
                         
                         </h1>
+            
                     </>
                     : show === 'categories' ? <CategoriesCrud /> 
                        : show === 'books' ? <BooksCrud /> : null

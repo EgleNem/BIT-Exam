@@ -10,30 +10,59 @@ function Front() {
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   const [books, setBooks] = useState(null);
-  const [rateNow, setRateNow] = useState(null);
+  const [categories, setCategories] = useState(null);
+  const [category, setCategory] = useState(0);
+  const [filter, setFilter] = useState(0);
 
-  // READ Books
-  useEffect(() => {
-    axios
-      .get("http://localhost:3003/books", authConfig())
-      .then((res) => setBooks(res.data));
-  }, [lastUpdate]);
+  const [search, setSearch] = useState('');
+  // const [rateNow, setRateNow] = useState(null);
+  const doFilter = cid => {
+    setCategory(cid);
+    setFilter(parseInt(cid));
+}
+
+useEffect(() => {
+  let query;
+  if (filter === 0 && !search) {
+      query = '';
+  } else if (filter) {
+      query = '?category-id=' + filter
+  } else if (search) {
+      query = '?s=' + search
+  }
+
+
+  axios.get('http://localhost:3003/books' + query, authConfig())
+  .then(res => setBooks(res.data.map((b, i) => ({ ...b, row: i }))));
+}, [filter, search]);
+
+useEffect(() => {
+axios.get('http://localhost:3003/categories', authConfig())
+ .then(res => setCategories(res.data));
+}, []);
 
   // CREATE RATE
-  useEffect(() => {
-    if (null === rateNow) return;
-    axios
-      .put("http://localhost:3003/rates/" + rateNow.id, rateNow, authConfig())
-      .then((_) => {
-        setLastUpdate(Date.now());
-      });
-  }, [rateNow]);
+  // useEffect(() => {
+  //   if (null === rateNow) return;
+  //   axios
+  //     .put("http://localhost:3003/rates/" + rateNow.id, rateNow, authConfig())
+  //     .then((_) => {
+  //       setLastUpdate(Date.now());
+  //     });
+  // }, [rateNow]);
 
   return (
     <FrontContext.Provider
       value={{
         books,
-        setRateNow
+        setBooks,
+        categories,
+        setFilter,
+        category,
+        setCategory,
+        setSearch,
+        doFilter
+        // setRateNow
       }}
     >
       <Nav />

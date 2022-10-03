@@ -1,10 +1,9 @@
 import { useContext, useState } from "react";
+import rand from "../../Functions/rand";
 import FrontContext from "./FrontContext";
 
-
-
 function Line({ line }) {
-  const { setRateNow } = useContext(FrontContext);
+  const { setRateNow, doFilter } = useContext(FrontContext);
 
   const [rate, setRate] = useState("0");
 
@@ -16,30 +15,36 @@ function Line({ line }) {
     });
   };
 
+  const reserveBook = () => {
+    reservation: rand(0, 1);
+  };
+
   return (
     <li className="list-group-item">
       <div className="item">
         <div className="content">
           <p>
-            Name: <b>{line.title}</b>&nbsp;
+            Title: <b>{line.title}</b>&nbsp;
           </p>
           <p>
-            Surname: <b>{line.author}</b>&nbsp;
+            Author: <b>{line.author}</b>&nbsp;
           </p>
-        
-          <p>
-            Category: <b>{line.category}</b>&nbsp;
-          </p>
-          <p>
-            City: <b>{line.city}</b>
-          </p>
+
+          <div className="cat" onClick={() => doFilter(line.cid)}>
+            {line.category}
+          </div>&nbsp;
+
+          <button onClick={reserveBook}>
+            Reserve
+            {/* <b>{line.reservation}</b> */}
+          </button>
           {line.photo ? (
             <div className="photo-bin">
               <img src={line.photo} alt="nice" />
             </div>
           ) : null}
         </div>
-        <div className="rate mt-2">
+        {/* <div className="rate mt-2">
           <label className="mr-2">Rate now!</label>
           <button className= "heart-shape" value={rate} onClick={rateIt}>
             
@@ -49,7 +54,7 @@ function Line({ line }) {
               ? "Voters: " + line.rates
               : "No rates yet"}
           </p>
-        </div>
+        </div> */}
       </div>
     </li>
   );

@@ -10,7 +10,7 @@ function Edit() {
 
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
-    const [category, setCategory] = useState("");
+    const [category, setCategory] = useState('0');
     const [reservation, setReservation] = useState('');
     const [photoPrint, setPhotoPrint] = useState(null);
 
@@ -94,18 +94,28 @@ function Edit() {
                     <select className="form-control" onChange={e => setCategory(e.target.value)} value={category}>
                         <option value="0">Please, select the category</option>
                         {
-                            categories ? categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                  {category.name}</option>)) : null
-                        }
+                                    categories ? categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>) : null
+                                }
                     </select>
                     <small className="form-text text-muted">Select category here.</small>
                 </div>
                 <div className="form-group">
-                    <label>Reservation</label>
-                    <input type="text" className="form-control" onChange={e => setReservation(e.target.value)} value={reservation} />
-                    <small className="form-text text-muted">Enter city.</small>
-                </div>
+          <label>Reservation</label>
+          <div className="checkbox">
+            <input 
+              type="checkbox"
+              checked={!reservation}
+              onChange={() => setReservation(reservation ? 0 : 1)}
+            />{" "}
+            Available
+            <input
+              type="checkbox"
+              checked={reservation}
+              onChange={() => setReservation(reservation ? 0 : 1)}
+            />{" "}
+            Not available
+          </div>
+        </div>
                 <div className="form-group">
                     <label>Photo</label>
                     <input ref={fileInput} type="file" className="form-control" onChange={doPhoto}/>
