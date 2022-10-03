@@ -292,6 +292,18 @@ requests = [req.query['category-id']];
     });
   });
 
+  app.get("/categories", (req, res) => {
+    const sql = `
+  SELECT *
+  FROM categories
+  ORDER BY name
+`;
+    con.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
      // b.rates, b.rate_sums
   
   // app.put("/rates/:id", (req, res) => {

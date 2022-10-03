@@ -137,7 +137,7 @@ function Back({ show }) {
         setMessages(msg => [...msg, b]);
         setTimeout(() => {
             setMessages(mes => mes.filter(ms => ms.id !== id))
-        }, 5000);
+        }, 1000);
     }
 
 
@@ -177,3 +177,4 @@ function Back({ show }) {
     )
 }
 export default Back;
+
